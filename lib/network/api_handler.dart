@@ -7,7 +7,7 @@ class ApiService {
     _dio.options.headers["Content-Type"] = "application/json";
   }
 
-  Future<Response> get(String url) async {
+  Future<Response> getTodos(String url) async {
     try {
       return await _dio.get("$baseUrl$url");
     } catch (e) {
@@ -16,7 +16,7 @@ class ApiService {
     }
   }
 
-  Future<Response> post(String url, dynamic data) async {
+  Future<Response> postTodo(String url, dynamic data) async {
     try {
       return await _dio.post("$baseUrl$url", data: data);
     } catch (e) {
@@ -25,7 +25,7 @@ class ApiService {
     }
   }
 
-  Future<Response> delete(String url) async {
+  Future<Response> deleteTodo(String url) async {
     try {
       return await _dio.delete("$baseUrl$url");
     } catch (e) {

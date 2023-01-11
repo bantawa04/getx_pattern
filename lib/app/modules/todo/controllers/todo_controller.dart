@@ -2,23 +2,47 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getx_todo/app/data/todo_data.dart';
 import 'package:getx_todo/app/model/todo.dart';
+import 'package:getx_todo/network/api_handler.dart';
 
 class TodoController extends GetxController {
   //TODO: Implement TodoController
 
   final count = 0.obs;
-  final todos = todosData.obs;
+  // final todos = todosData.obs;
+  RxList<Todo> todos = <Todo>[].obs;
 
   final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
-  var status = false.obs;
+  var completed = false.obs;
 
   void increment() => count.value++;
+  final ApiService apiService = ApiService();
+  RxBool isDataLoaded = false.obs;
+
+  @override
+  void onInit() async {
+    isDataLoaded.value = false;
+    Future.delayed(const Duration(seconds: 2), () async {
+      var response = await apiService.getTodos('/todos');
+      // inspect(response);
+      // todos.value = response.data as List<Todo>;
+      response.data.forEach((el) => {
+            todos.value.add(Todo(
+              id: el['id'],
+              title: el['title'],
+              userId: el['userId'],
+              completed: el['completed'],
+            ))
+          });
+      isDataLoaded.value = true;
+    });
+    // TODO: implement onInit
+
+    super.onInit();
+  }
 
   void addTodo() {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
+    if (titleController.text.isEmpty) {
       Get.snackbar(
         "Error",
         "Please enter todo content",
@@ -31,12 +55,11 @@ class TodoController extends GetxController {
       Todo(
         id: todos.length + 1,
         title: titleController.text,
-        status: status.value,
-        description: titleController.text,
+        completed: completed.value,
+        userId: 1,
       ),
     );
     titleController.text = "";
-    descriptionController.text = "";
     Get.back();
     inspect(todos);
   }
@@ -47,7 +70,7 @@ class TodoController extends GetxController {
     final index = todos.indexOf(todo);
     if (index == -1) return;
 
-    todo.status = todo.status;
+    todo.completed = todo.completed;
     todos[index] = todo;
   }
 
@@ -77,17 +100,6 @@ class TodoController extends GetxController {
               const SizedBox(
                 height: 16,
               ),
-              const Text("Description"),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  hintText: "Description",
-                ),
-                maxLines: 5,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
               const Text("Status"),
               Row(
                 children: <Widget>[
@@ -95,9 +107,9 @@ class TodoController extends GetxController {
                         child: RadioListTile(
                           title: const Text("Complete"),
                           value: true,
-                          groupValue: status.value,
+                          groupValue: completed.value,
                           onChanged: (value) {
-                            status.value = value!;
+                            completed.value = value!;
                           },
                         ),
                       )),
@@ -105,9 +117,9 @@ class TodoController extends GetxController {
                         child: RadioListTile(
                           title: const Text("Incomplete"),
                           value: false,
-                          groupValue: status.value,
+                          groupValue: completed.value,
                           onChanged: (value) {
-                            status.value = value!;
+                            completed.value = value!;
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),

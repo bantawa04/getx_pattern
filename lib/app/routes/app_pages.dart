@@ -20,7 +20,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.TODO,
-      page: () => const TodoView(),
+      page: () => TodoView(),
       binding: TodoBinding(),
     ),
   ];
