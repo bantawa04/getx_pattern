@@ -47,7 +47,7 @@ class TodoController extends GetxController {
     final index = todos.indexOf(todo);
     if (index == -1) return;
 
-    todo.status = !todo.status;
+    todo.status = todo.status;
     todos[index] = todo;
   }
 

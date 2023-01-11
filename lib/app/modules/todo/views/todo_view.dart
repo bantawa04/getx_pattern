@@ -18,7 +18,7 @@ class TodoView extends GetView<TodoController> {
           itemBuilder: (ctx, index) {
             return GestureDetector(
               onDoubleTap: () =>
-                  controller.updateTodo(controller.todos[index].id),
+                  controller.updateTodo(controller.todos[index].id!),
               child: Padding(
                 padding: const EdgeInsets.only(
                   left: 8,
@@ -47,11 +47,11 @@ class TodoView extends GetView<TodoController> {
                             const Text("Are you sure you want to delete ?"),
                         actions: [
                           TextButton(
-                            onPressed: () => Get.back(result: false),
-                            child: const Text("No"),
+                            onPressed: () => Get.back(result: true),
+                            child: const Text("Yes"),
                           ),
                           TextButton(
-                            onPressed: () => Get.back(result: true),
+                            onPressed: () => Get.back(result: false),
                             child: const Text("No"),
                           ),
                         ],
@@ -59,18 +59,18 @@ class TodoView extends GetView<TodoController> {
                     );
                   },
                   onDismissed: (direction) {
-                    controller.deleteTodo(controller.todos[index].id);
+                    controller.deleteTodo(controller.todos[index].id!);
                   },
                   child: ListTile(
                     leading: Icon(
-                      color: controller.todos[index].status
+                      color: controller.todos[index].status!
                           ? Colors.green
                           : Colors.red,
-                      controller.todos[index].status
+                      controller.todos[index].status!
                           ? Icons.check_circle
                           : Icons.close,
                     ),
-                    title: Text(controller.todos[index].title),
+                    title: Text(controller.todos[index].title!),
                     subtitle: Text(controller.todos[index].description!),
                   ),
                 ),
