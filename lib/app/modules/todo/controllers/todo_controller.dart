@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getx_todo/app/model/todo.dart';
+import 'package:getx_todo/app/model/todo.dart' show Todo, TodoRequest;
 import 'package:getx_todo/network/api_handler.dart';
 
 class TodoController extends GetxController {
@@ -23,13 +23,13 @@ class TodoController extends GetxController {
   void onInit() async {
     isDataLoaded.value = false;
     Future.delayed(const Duration(seconds: 2), () async {
-      var response = await apiService.getTodos('/todos');
-      // inspect(response);
-      // todos.value = response.data as List<Todo>;
-      response.data.forEach((el) => {
+      var response = await apiService.getTodos('/todos?limit=5');
+      // inspect(response.data);
+      // todos.value = response.data["todos"] as List<Todo>;
+      response.data["todos"].forEach((el) => {
             todos.value.add(Todo(
               id: el['id'],
-              title: el['title'],
+              title: el['todo'],
               userId: el['userId'],
               completed: el['completed'],
             ))
@@ -64,14 +64,20 @@ class TodoController extends GetxController {
     inspect(todos);
   }
 
-  void updateTodo(int id) {
-    final todo = todos.firstWhere((item) => item.id == id);
-
-    final index = todos.indexOf(todo);
+  void updateTodo(int id) async {
+    final toUpdate = todos.firstWhere((item) => item.id == id);
+    inspect(toUpdate);
+    final index = todos.indexOf(toUpdate);
     if (index == -1) return;
 
-    todo.completed = todo.completed;
-    todos[index] = todo;
+    var status = !toUpdate.completed!;
+
+    TodoRequest request = TodoRequest(completed: status);
+
+    final response =
+        await apiService.updateTodo("/todos/$id", request.toJson());
+    todos[index] =
+        Todo(id: toUpdate.id, title: toUpdate.title, completed: status);
   }
 
   void deleteTodo(int id) {

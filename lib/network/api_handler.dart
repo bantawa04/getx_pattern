@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 class ApiService {
   final Dio _dio = Dio();
-  String baseUrl = "https://jsonplaceholder.typicode.com";
+  String baseUrl = "https://dummyjson.com";
   ApiService() {
     _dio.options.headers["Content-Type"] = "application/json";
   }
@@ -19,6 +19,16 @@ class ApiService {
   Future<Response> postTodo(String url, dynamic data) async {
     try {
       return await _dio.post("$baseUrl$url", data: data);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<Response> updateTodo(String url, dynamic data) async {
+    try {
+      print("$baseUrl$url");
+      return await _dio.put("$baseUrl$url", data: data);
     } catch (e) {
       print(e);
       rethrow;
